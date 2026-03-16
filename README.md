@@ -315,7 +315,9 @@ To ensure Proton loads the mods natively and exposes your GPU's DLSS/FSR capabil
    PROTON_ENABLE_NVAPI=1 WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" gamemoderun %command% -dx12
    ```
 
-> [!IMPORTANT] LINUX PERFORMANCE WARNING (DX11 vs DX12)
+> [!IMPORTANT] 
+> ⚠️ LINUX PERFORMANCE WARNING (DX11 vs DX12) ⚠️
+> 
 > The *Luma* mod **requires** DirectX 12 (`-dx12`). However, UE4's DX12 implementation is notoriously poorly optimized and may still cause minor stutters on Linux via VKD3D translation, even with high-end hardware. 
 > 
 > **For the absolute smoothest experience on Linux:** If you have a powerful GPU and prefer raw stability over AI Frame Generation, delete the Luma mod (`dxgi.dll`), remove `dxgi=n,b` and `NVAPI` from your launch options, and use `-dx11` instead. DXVK (DirectX 11 to Vulkan) handles this game's shader compilation significantly better.
