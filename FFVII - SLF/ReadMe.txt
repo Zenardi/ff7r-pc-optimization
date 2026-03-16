@@ -1,0 +1,1 @@
+Copy the included Engine.ini to %USERPROFILE%\Documents\My Games\FINAL FANTASY VII REMAKE\Saved\Config\WindowsNoEditor\.
