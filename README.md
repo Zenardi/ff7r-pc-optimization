@@ -7,6 +7,23 @@ This guide compiles the installation of three essential mods:
 2. **[SPF (Stuttering Prevention Fix)](https://www.nexusmods.com/finalfantasy7remake/mods/66):** Re-architects CPU thread allocation to prevent shader compilation stutters.
 3. **[Luma - DLSS/FSR Upscaling Mod](https://www.nexusmods.com/finalfantasy7remake/mods/1974):** Replaces the default dynamic resolution with NVIDIA DLSS / AMD FSR and enables Frame Generation.
 
+- [FF7 Remake: The Ultimate Performance \& Stuttering Fix (Windows \& Linux)](#ff7-remake-the-ultimate-performance--stuttering-fix-windows--linux)
+  - [⚙️ The Master `Engine.ini` Configuration](#️-the-master-engineini-configuration)
+  - [🪟 Windows Installation](#-windows-installation)
+    - [1. Install the Mods](#1-install-the-mods)
+    - [2. Apply the Engine Config](#2-apply-the-engine-config)
+    - [3. Steam Launch Options](#3-steam-launch-options)
+  - [🐧 Linux / Steam Deck Installation (Proton)](#-linux--steam-deck-installation-proton)
+    - [1. Install the Mods](#1-install-the-mods-1)
+    - [2. Apply the Engine Config](#2-apply-the-engine-config-1)
+    - [3. Steam Launch Options (The Crucial Step)](#3-steam-launch-options-the-crucial-step)
+    - [🎮 In-Game Activation](#-in-game-activation)
+  - [📊 Linux Bonus: Monitoring Performance with MangoHud](#-linux-bonus-monitoring-performance-with-mangohud)
+    - [1. Installation](#1-installation)
+    - [2. Steam Launch Options Integration](#2-steam-launch-options-integration)
+    - [3. In-Game Usage](#3-in-game-usage)
+
+
 ---
 
 ## ⚙️ The Master `Engine.ini` Configuration
