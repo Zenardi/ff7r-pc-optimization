@@ -143,9 +143,11 @@ function Find-GamePath {
 function Validate-Files {
     Write-Log "Validating source files..."
     
-    # Validate Engine.ini
-    if (!(Test-Path $EngineLni)) {
-        Fail "Engine.ini not found at: $EngineLni"
+    # Validate Engine.ini only if we're deploying it
+    if (!$SkipConfig) {
+        if (!(Test-Path $EngineLni)) {
+            Fail "Engine.ini not found at: $EngineLni"
+        }
     }
     
     # Validate FFVIIHook DLL
@@ -268,13 +270,18 @@ function Show-SteamLaunchOptions {
     Write-Log "IMPORTANT: Steam Launch Options" "WARNING"
     Write-Log "========================================" "INFO"
     Write-Log ""
-    Write-Log "1. Open Steam and right-click FINAL FANTASY VII REMAKE"
-    Write-Log "2. Click 'Properties' > 'General' > 'Launch Options'"
-    Write-Log "3. Paste this option:"
+    Write-Log "Luma requires this minimum launch option in Steam:"
     Write-Log ""
     Write-Log "   -dx11" "SUCCESS"
     Write-Log ""
-    Write-Log "Note: Luma is DX11-only. Do NOT use -dx12." "WARNING"
+    Write-Log "1. Open Steam and right-click FINAL FANTASY VII REMAKE"
+    Write-Log "2. Click 'Properties' > 'General' > 'Launch Options'"
+    Write-Log "3. Paste the launch option above"
+    Write-Log ""
+    Write-Log "Optional: For better performance with NVIDIA GPU + overlays,"
+    Write-Log "use this instead:"
+    Write-Log ""
+    Write-Log "   __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia -dx11" "SUCCESS"
     Write-Log ""
     Write-Log "4. Once in-game, press Home or Insert to open Luma"
     Write-Log "   overlay and select your preferred upscaler."
@@ -325,7 +332,9 @@ if ($DryRun) {
 Write-Log ""
 Write-Log "Configuration:"
 Write-Log "  Game Path: $GamePath"
-Write-Log "  Engine.ini: $EngineLni"
+if (!$SkipConfig) {
+    Write-Log "  Engine.ini: $EngineLni"
+}
 Write-Log "  Install Hook: $(if ($SkipHook) { 'No' } else { 'Yes' })"
 Write-Log "  Install Luma: $(if ($SkipLuma) { 'No' } else { 'Yes' })"
 Write-Log "  Deploy Config: $(if ($SkipConfig) { 'No' } else { 'Yes' })"

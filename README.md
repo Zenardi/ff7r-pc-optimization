@@ -13,13 +13,13 @@ This guide covers the installation of essential mods and crucial OS-level config
     - [Automated Installation (Recommended)](#automated-installation-recommended)
     - [Manual Installation (Alternative)](#manual-installation-alternative)
       - [1. Install the Mods](#1-install-the-mods)
-      - [2. Apply the Engine Config](#2-apply-the-engine-config)
+      - [2. (Optional) Apply the Engine Config](#2-optional-apply-the-engine-config)
       - [3. Manual Steam Launch Options](#3-manual-steam-launch-options)
   - [🐧 Linux (Ubuntu / Pop!\_OS / Steam Deck) Configuration](#-linux-ubuntu--pop_os--steam-deck-configuration)
     - [Automated Install Examples](#automated-install-examples)
     - [1. Install the Essential Mods](#1-install-the-essential-mods)
     - [2. Install Luma's Proton Dependencies](#2-install-lumas-proton-dependencies)
-    - [3. Apply the Engine Config](#3-apply-the-engine-config)
+    - [3. (Optional) Apply Performance Configuration](#3-optional-apply-performance-configuration)
     - [4. Proper NVIDIA Driver Installation (Modern RTX Series)](#4-proper-nvidia-driver-installation-modern-rtx-series)
     - [5. Steam Launch Options (The Crucial Step)](#5-steam-launch-options-the-crucial-step)
   - [📊 Linux: Monitoring Performance with MangoHud](#-linux-monitoring-performance-with-mangohud)
@@ -32,11 +32,24 @@ This guide covers the installation of essential mods and crucial OS-level config
 
 ## ⚙️ Engine.ini Configuration Files
 
-This repository includes two pre-optimized `Engine.ini` configurations:
+This repository includes three pre-optimized `Engine.ini` configurations:
 
 - **[Engine.ini](Engine.ini)** — Standard balanced configuration with multithreading optimization, forced native resolution, and motion blur/DOF disabled. Combines SPF tweaks with Unreal Engine 4 performance optimizations.
 
 - **[Engine-full-res.ini](Engine-full-res.ini)** — Ultra-graphics variant for high-end GPUs (8GB+ VRAM). Includes 4K shadow resolution, maximum draw distance to eliminate pop-in, and cinematic anti-aliasing.
+
+- **[Engine-full-res-dlss.ini](Engine-full-res-dlss.ini)** — Ultra-graphics + DLSS/FSR optimized variant. Tunes dynamic resolution scaling (50-80%), temporal AA samples (16), and DLAA forcing for maximum Luma upscaler quality.
+
+**Where Engine.ini Goes:**
+
+| Platform | Location |
+|----------|----------|
+| **Windows (native)** | `%USERPROFILE%\Documents\My Games\FINAL FANTASY VII REMAKE\Saved\Config\WindowsNoEditor\Engine.ini` |
+| **Linux (via Proton, .deb)** | `~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/Engine.ini` |
+| **Linux (Flatpak)** | `~/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/Engine.ini` |
+
+> [!IMPORTANT]
+> **DLL files** (FFVIIHook's `xinput1_3.dll` and Luma's `dxgi.dll`) go in a **separate location**: `/End/Binaries/Win64/`
 
 Use the appropriate file when running the installation scripts, or copy its contents to your local Engine.ini file if installing manually.
 
@@ -72,6 +85,9 @@ If you have this repository cloned, use the provided PowerShell script to automa
 # Ultra-graphics config (8GB+ VRAM)
 .\setup-windows.ps1 --EngineLni .\Engine-full-res.ini
 
+# Ultra-graphics + DLSS/FSR optimization
+.\setup-windows.ps1 --EngineLni .\Engine-full-res-dlss.ini
+
 # Custom game installation path
 .\setup-windows.ps1 --GamePath "D:\Games\FINAL FANTASY VII REMAKE"
 
@@ -99,10 +115,11 @@ If you prefer to install manually or the script doesn't work for your setup:
 2. Extract the `xinput1_3.dll` from the **FFVIIHook** folder into this folder.
 3. Extract the contents of the **Luma** mod (from the `.zip` file) into the same `Win64` folder. The important files are `dxgi.dll` and the accompanying Luma configuration files.
 
-#### 2. Apply the Engine Config
+#### 2. (Optional) Apply the Engine Config
 1. Go to your Documents folder:
    `%USERPROFILE%\Documents\My Games\FINAL FANTASY VII REMAKE\Saved\Config\WindowsNoEditor\`
-2. Open `Engine.ini` (create it if it doesn't exist) and paste the master configuration provided at the top of this guide. Save and close.
+2. Open `Engine.ini` (create it if it doesn't exist) and copy the contents from one of the config files in this repo ([Engine.ini](Engine.ini), [Engine-full-res.ini](Engine-full-res.ini), or [Engine-full-res-dlss.ini](Engine-full-res-dlss.ini)). Save and close.
+   *(This is optional; Luma works without it, but Engine.ini significantly improves stuttering and frame consistency.)*
 
 #### 3. Manual Steam Launch Options
 1. Right-click the game in your Steam Library > **Properties** > **General**.
@@ -156,6 +173,13 @@ chmod +x ./setup-linux.sh
 ./setup-linux.sh --steam-install deb --engine-ini ./Engine-full-res.ini --gpu nvidia
 ```
 
+**Full install with DLSS/FSR optimization (Luma-tuned settings):**
+
+```bash
+chmod +x ./setup-linux.sh
+./setup-linux.sh --steam-install deb --engine-ini ./Engine-full-res-dlss.ini --gpu nvidia
+```
+
 **Full install for Flatpak Steam:**
 
 ```bash
@@ -179,7 +203,7 @@ chmod +x ./setup-linux.sh
 
 Parameter summary:
 
-* `--engine-ini ./Engine.ini` or `--engine-ini ./Engine-full-res.ini`: Selects the source config file. The destination is always written as `Engine.ini` inside the Proton prefix.
+* `--engine-ini ./Engine.ini` or `--engine-ini ./Engine-full-res.ini` or `--engine-ini ./Engine-full-res-dlss.ini`: Selects the source config file. The destination is always written as `Engine.ini` inside the Proton prefix.
 * `--steam-install deb`: Use this when Steam was installed from the `.deb` package.
 * `--steam-install flatpak`: Use this when Steam was installed from the app center / Flatpak.
 * `--steam-install custom --custom-steam-root "/path/to/Steam"`: Use this when your Steam installation lives in a non-standard directory. The path must contain `steamapps`.
@@ -197,8 +221,11 @@ chmod +x ./setup-linux.sh
 1. Navigate to your game installation folder. Common Steam install roots on Linux are:
   - `~/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64` **(.deb package, downloaded from offical Steam site)**
   - `~/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64` **(Flatpak Steam)**
-2. Extract `xinput1_3.dll` from **FFVIIHook** into this folder.
-3. Extract the **Luma** mod into the same folder so that `dxgi.dll` and the bundled Luma files sit next to the game executable.
+   
+   *(This is where the DLL files go: `xinput1_3.dll` and `dxgi.dll`)*
+
+2. Extract `xinput1_3.dll` from **FFVIIHook** into this `Win64` folder.
+3. Extract the **Luma** mod into the same `Win64` folder so that `dxgi.dll` and the bundled Luma files sit next to the game executable.
 
 ### 2. Install Luma's Proton Dependencies
 1. On Ubuntu, install `protontricks` first:
@@ -215,22 +242,39 @@ chmod +x ./setup-linux.sh
     protontricks 1462040 msvcrt40 vcrun2022
     ```
 
-### 3. Apply the Engine Config
-1. Navigate to the game's compatdata (prefix) config folder. Common locations are:
-  - `~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/` **(.deb package, downloaded from offical Steam site)**
-  - `~/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/` **(Flatpak Steam)**
+### 3. (Optional) Apply Performance Configuration
 
-> [!TIP]
-> If `WindowsNoEditor` folder does not exist, create it with 
-> * `mkdir WindowsNoEditor` or
-> * `mkdir -p "~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/"`
+The Engine.ini configurations included in this repo ([Engine.ini](Engine.ini), [Engine-full-res.ini](Engine-full-res.ini), and [Engine-full-res-dlss.ini](Engine-full-res-dlss.ini)) are **optional enhancements** for better CPU thread utilization and visual settings. Luma works without them, but they significantly improve stuttering and frame consistency.
 
+**Important:** Engine.ini goes in a **different location** than the DLL mods. While the DLLs go in `/End/Binaries/Win64/`, the Engine.ini config goes in the Proton prefix directory.
 
-2. If the `compatdata/1462040` folder does not exist yet, launch the game once through Steam to create the prefix.
-3. Open or create the `Engine.ini` file and paste the master configuration provided above.
+To apply a config file:
+
+1. If the `compatdata/1462040` folder does not exist yet, launch the game once through Steam to create the Proton prefix.
+
+2. Navigate to the game's Proton prefix config folder (separate from Win64). Use the appropriate path for your Steam installation:
+   
+   **For .deb package Steam:**
+   ```bash
+   CONFIG_DIR="$HOME/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor"
+   mkdir -p "$CONFIG_DIR"
+   ```
+   
+   **For Flatpak Steam:**
+   ```bash
+   CONFIG_DIR="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor"
+   mkdir -p "$CONFIG_DIR"
+   ```
+
+3. Copy your chosen Engine.ini file from this repo to that folder:
+   ```bash
+   cp ./Engine.ini "$CONFIG_DIR/Engine.ini"
+   # or for DLSS-optimized:
+   cp ./Engine-full-res-dlss.ini "$CONFIG_DIR/Engine.ini"
+   ```
 
 > [!NOTE]
-> `1462040` Final Fantasy Remake's game id 
+> `1462040` is Final Fantasy VII Remake's Steam app ID 
 
 ### 4. Proper NVIDIA Driver Installation (Modern RTX Series)
 Newer graphics cards (like the RTX 50-series) require the new Open GPU Kernel Modules. If your game is running at very low framerates (e.g., 15 FPS), your system might be failing to load the older proprietary drivers and defaulting to integrated graphics.
@@ -249,27 +293,32 @@ Newer graphics cards (like the RTX 50-series) require the new Open GPU Kernel Mo
 4. After rebooting, verify the installation by running `nvidia-smi` in the terminal. If it returns `No devices were found`, ensure that **Secure Boot** is disabled in your motherboard's BIOS, as it blocks third-party modules from loading.
 
 ### 5. Steam Launch Options (The Crucial Step)
-To ensure the game uses the dedicated GPU, loads both FFVIIHook/SPF and Luma correctly, runs on DX11, and enables telemetry, use the following command in the game's **Launch Options** on Steam:
+
+The minimum required launch option for **Luma alone** is:
+
+```bash
+WINEDLLOVERRIDES="dxgi=n,b" %command% -dx11
+```
+
+If you also installed **FFVIIHook**, add its DLL override:
+
+```bash
+WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" %command% -dx11
+```
+
+**Optional enhancements** (NVIDIA GPU + performance utilities):
 
 ```bash
 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" gamemoderun mangohud %command% -dx11
 ```
 
-> [!TIP]
-> If you prefer, remove `mangohud` if you dont care about displaying telemetry overlay
-
-**What this command does:**
-* `__NV_PRIME...` & `__GLX_VENDOR...`: Forces the system to use the dedicated NVIDIA GPU.
-* `WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b"`: Ensures both FFVIIHook/SPF and the Luma `dxgi.dll` are injected correctly.
-* `gamemoderun`: Enables Feral GameMode for maximum processing priority.
-* `mangohud`: Displays the telemetry overlay.
-* `-dx11`: Forces DirectX 11.
-
-If you are installing **only** Luma and not FFVIIHook/SPF, you can reduce the DLL override to:
-
-```bash
-WINEDLLOVERRIDES="dxgi=n,b" %command% -dx11
-```
+**What each part does:**
+* `WINEDLLOVERRIDES="dxgi=n,b"` — Loads Luma's dxgi.dll
+* `WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b"` — Loads both FFVIIHook and Luma
+* `__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia` — Forces dedicated NVIDIA GPU (remove if using AMD/Intel)
+* `gamemoderun` — Enables Feral GameMode for performance priority
+* `mangohud` — Displays performance overlay (remove if you don't want it)
+* `-dx11` — Forces DirectX 11 (required for Luma)
 
 ---
 

@@ -16,6 +16,7 @@ INSTALL_PACKAGES=1
 INSTALL_PROTON_DEPS=1
 INSTALL_HOOK=1
 INSTALL_LUMA=1
+INSTALL_CONFIG=1
 USE_MANGOHUD=1
 GPU_MODE="auto"
 DRY_RUN=0
@@ -50,11 +51,13 @@ Automates the Linux steps from this repo's README:
 
 Options:
   --engine-ini PATH      Use a custom source .ini file. Destination stays Engine.ini.
-    --steam-install TYPE   Choose Steam layout: auto, deb, flatpak, or custom.
-    --custom-steam-root    Steam root for --steam-install custom. Must contain steamapps.
+                         (Optional; Luma works without it.)
+  --steam-install TYPE   Choose Steam layout: auto, deb, flatpak, or custom.
+  --custom-steam-root    Steam root for --steam-install custom. Must contain steamapps.
   --luma-only            Skip FFVIIHook installation and use Luma-only launch options.
   --skip-packages        Do not install Ubuntu packages.
   --skip-protontricks    Do not run protontricks.
+  --skip-config          Do not deploy Engine.ini (optional performance setting).
   --skip-luma            Do not extract the bundled Luma archive.
   --skip-mangohud        Do not include mangohud in the suggested launch options.
   --gpu MODE             Launch option GPU mode: auto, nvidia, or generic.
@@ -238,6 +241,10 @@ while [[ "$#" -gt 0 ]]; do
             INSTALL_PROTON_DEPS=0
             shift
             ;;
+        --skip-config)
+            INSTALL_CONFIG=0
+            shift
+            ;;
         --skip-luma)
             INSTALL_LUMA=0
             shift
@@ -283,7 +290,9 @@ esac
 
     ensure_not_root
 
-[[ -f "$ENGINE_INI_SOURCE" ]] || fail "Engine.ini not found at $ENGINE_INI_SOURCE"
+if [[ "$INSTALL_CONFIG" -eq 1 ]]; then
+    [[ -f "$ENGINE_INI_SOURCE" ]] || fail "Engine.ini not found at $ENGINE_INI_SOURCE"
+fi
 
 if [[ "$INSTALL_HOOK" -eq 1 ]]; then
     [[ -f "$HOOK_DLL_SOURCE" ]] || fail "FFVIIHook DLL not found at $HOOK_DLL_SOURCE"
@@ -316,8 +325,10 @@ if [[ "$INSTALL_PACKAGES" -eq 1 ]]; then
     install_ubuntu_packages
 fi
 
-run_cmd mkdir -p "$CONFIG_DIR"
-run_cmd cp "$ENGINE_INI_SOURCE" "$CONFIG_DIR/Engine.ini"
+if [[ "$INSTALL_CONFIG" -eq 1 ]]; then
+    run_cmd mkdir -p "$CONFIG_DIR"
+    run_cmd cp "$ENGINE_INI_SOURCE" "$CONFIG_DIR/Engine.ini"
+fi
 
 if [[ "$INSTALL_HOOK" -eq 1 ]]; then
     run_cmd cp "$HOOK_DLL_SOURCE" "$GAME_WIN64_DIR/xinput1_3.dll"
