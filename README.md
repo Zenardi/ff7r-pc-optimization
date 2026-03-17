@@ -276,7 +276,7 @@ If you have a high-end GPU with plenty of VRAM (like an RTX 5070 or better) and 
 
 Replace only the [ConsoleVariables] section at the very bottom of your Engine.ini with this block. It forces 4K shadows, maximum draw distance (eliminating texture pop-in), and cinematic anti-aliasing:
 
-```toml
+```ini
 [ConsoleVariables]
 ; --- 1. PURE NATIVE RESOLUTION & CLEAN IMAGE ---
 r.DynamicRes.OperationMode=0
