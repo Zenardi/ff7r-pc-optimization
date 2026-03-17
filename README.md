@@ -9,6 +9,7 @@ This guide covers the installation of essential mods and crucial OS-level config
 
 - [FF7 Remake: The Ultimate Performance \& Stuttering Fix (Windows \& Linux)](#ff7-remake-the-ultimate-performance--stuttering-fix-windows--linux)
   - [⚙️ The Master `Engine.ini` Configuration](#️-the-master-engineini-configuration)
+    - [🌟 Optional: Ultra Graphics Configuration (8GB+ VRAM)](#-optional-ultra-graphics-configuration-8gb-vram)
   - [🪟 Windows Installation](#-windows-installation)
     - [1. Install the Mods](#1-install-the-mods)
     - [2. Apply the Engine Config](#2-apply-the-engine-config)
@@ -268,6 +269,47 @@ r.Tonemapper.GrainQuantization=0
 ; Disables Depth of Field (Background blur)
 r.DepthOfFieldQuality=0
 r.DepthOfField.FarBlur=0
+```
+
+###  🌟 Optional: Ultra Graphics Configuration (8GB+ VRAM)
+If you have a high-end GPU with plenty of VRAM (like an RTX 5070 or better) and a solid frame rate (60+ FPS), you can push the Unreal Engine 4 well past the game's official "High" settings in the menu.
+
+Replace only the [ConsoleVariables] section at the very bottom of your Engine.ini with this block. It forces 4K shadows, maximum draw distance (eliminating texture pop-in), and cinematic anti-aliasing:
+
+```toml
+[ConsoleVariables]
+; --- 1. PURE NATIVE RESOLUTION & CLEAN IMAGE ---
+r.DynamicRes.OperationMode=0
+r.DynamicRes.MinResolutionRatio=100
+r.DynamicRes.MaxResolutionRatio=100
+r.ScreenPercentage=100
+r.MotionBlurQuality=0
+r.Tonemapper.GrainQuantization=0
+r.DepthOfFieldQuality=0
+r.DepthOfField.FarBlur=0
+
+; --- 2. EXTREME SHADOW QUALITY (4K) ---
+r.Shadow.MaxResolution=4096
+r.Shadow.MaxCSMResolution=4096
+r.Shadow.DistanceScale=2.0
+r.Shadow.CSM.MaxCascades=4
+r.Shadow.RadiusThreshold=0.01
+
+; --- 3. ELIMINATE POP-IN (AGGRESSIVE LOD) ---
+r.StaticMeshLODDistanceScale=0.1
+r.SkeletalMeshLODBias=-2
+r.ViewDistanceScale=3.0
+foliage.LODDistanceScale=3.0
+
+; --- 4. ENHANCED TEXTURES & REFLECTIONS ---
+r.MaxAnisotropy=16
+r.SSR.Quality=4
+r.Color.Fringe=0
+
+; --- 5. CINEMATIC ANTI-ALIASING (TAA) ---
+r.PostProcessAAQuality=6
+r.TemporalAA.Algorithm=1
+r.TemporalAASamples=32
 ```
 
 ---
