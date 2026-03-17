@@ -8,13 +8,15 @@ This guide covers the installation of essential mods and crucial OS-level config
 3. **[Luma - DLSS/FSR Upscaling Mod](https://www.nexusmods.com/finalfantasy7remake/mods/1974):** A DX11-only mod that replaces the game's TAA with NVIDIA DLSS / AMD FSR and can be used on both Windows and Linux.
 
 - [FF7 Remake: The Ultimate Performance \& Stuttering Fix (Windows \& Linux)](#ff7-remake-the-ultimate-performance--stuttering-fix-windows--linux)
-  - [⚙️ The Master `Engine.ini` Configuration](#️-the-master-engineini-configuration)
-    - [🌟 Optional: Ultra Graphics Configuration (8GB+ VRAM)](#-optional-ultra-graphics-configuration-8gb-vram)
+  - [⚙️ Engine.ini Configuration Files](#️-engineini-configuration-files)
   - [🪟 Windows Installation](#-windows-installation)
-    - [1. Install the Mods](#1-install-the-mods)
-    - [2. Apply the Engine Config](#2-apply-the-engine-config)
-    - [3. Steam Launch Options](#3-steam-launch-options)
+    - [Automated Installation (Recommended)](#automated-installation-recommended)
+    - [Manual Installation (Alternative)](#manual-installation-alternative)
+      - [1. Install the Mods](#1-install-the-mods)
+      - [2. Apply the Engine Config](#2-apply-the-engine-config)
+      - [3. Manual Steam Launch Options](#3-manual-steam-launch-options)
   - [🐧 Linux (Ubuntu / Pop!\_OS / Steam Deck) Configuration](#-linux-ubuntu--pop_os--steam-deck-configuration)
+    - [Automated Install Examples](#automated-install-examples)
     - [1. Install the Essential Mods](#1-install-the-essential-mods)
     - [2. Install Luma's Proton Dependencies](#2-install-lumas-proton-dependencies)
     - [3. Apply the Engine Config](#3-apply-the-engine-config)
@@ -23,315 +25,92 @@ This guide covers the installation of essential mods and crucial OS-level config
   - [📊 Linux: Monitoring Performance with MangoHud](#-linux-monitoring-performance-with-mangohud)
     - [1. Installation](#1-installation)
     - [2. In-Game Usage](#2-in-game-usage)
-  - [🎮 Bonus: Native DualSense (PS5) Support](#-bonus-native-dualsense-ps5-support)
+  - [🎮 Native DualSense (PS5) Support](#-native-dualsense-ps5-support)
     - [🖥️ Tested Environment](#️-tested-environment)
 
 ---
 
-## ⚙️ The Master `Engine.ini` Configuration
+## ⚙️ Engine.ini Configuration Files
 
-Both Windows and Linux installations will require this highly optimized configuration block. It combines the SPF multithreading tweaks with forced 100% native resolution, disabling the game's aggressive dynamic resolution scaling, motion blur, and depth of field.
+This repository includes two pre-optimized `Engine.ini` configurations:
 
-Create or edit your `Engine.ini` file (paths provided in the OS sections below) and paste the following:
+- **[Engine.ini](Engine.ini)** — Standard balanced configuration with multithreading optimization, forced native resolution, and motion blur/DOF disabled. Combines SPF tweaks with Unreal Engine 4 performance optimizations.
 
-```ini
-[SystemSettings]
-niagara.CreateShadersOnLoad=1
-D3D12.PSO.DiskCache=1
-D3D12.PSO.DriverOptimizedDiskCache=1
-D3D12.AsyncDeferredDeletion=1
-D3D12.ResidencyManagement=1
-D3D12.SyncThreshold=999
-D3D12.Aftermath=0
+- **[Engine-full-res.ini](Engine-full-res.ini)** — Ultra-graphics variant for high-end GPUs (8GB+ VRAM). Includes 4K shadow resolution, maximum draw distance to eliminate pop-in, and cinematic anti-aliasing.
 
-[/Script/Engine.RendererSettings]
-r.CreateShadersOnLoad=1
-r.UseShaderCaching=1
-r.AsyncCompute=1
-r.AsyncPipelineCompile=1
-r.GTSyncType=1 
-r.DontLimitOnBattery=1
-r.AOAsyncBuildQueue=1
-r.RDG.AsyncCompute=1
-r.Shaders.Optimize=1
-r.ShaderPipelineCache.PreOptimizeEnabled=1
-r.ShaderPipelineCache.ReportPSO=0
-r.ShaderPipelineCache.LogPSO=0
-r.ShaderComplexity.CacheShaders=1
-r.ShaderPipelineCache.SaveUserCache=1
-r.ShaderPipelineCache.Enabled=1
-r.UseAsyncShaderPrecompilation=1
-r.Streaming.UseAsyncRequestsForDDC=1
-r.Streaming.AmortizeCPUToGPUCopy=1
-r.Streaming.UseNewMetrics=1
-r.Streaming.LimitPoolSizeToVRAM=1
-r.OneFrameThreadLag=1
-r.RHICmdCollectRHIThreadStatsFromHighLevel=0
-r.RHICmdBufferWriteLocks=0 
-r.VolumetricRenderTarget.PreferAsyncCompute=1
-r.Distortion=0
-r.DisableDistortion=1
-r.GPUCrashDebugging=0
-r.GPUCrashDump=0
-r.GPUCrashDebugging.Aftermath.Markers=0
-r.GPUCrashDebugging.Aftermath.Callstack=0
-r.GPUCrashDebugging.Aftermath.TrackAll=0
-r.GPUCrash.DataDepth=0
-r.ShaderLibrary.PrintExtendedStats=0
-r.GPUCrash.Collectionenable=0
-r.D3D12.GPUCrashDebuggingMode=0
-r.CompileShadersForDevelopment=0
-s.MaxIncomingRequestsToStall=0
-s.MaxReadyRequestsToStallMB=0
-r.EnableDebugSpam_GetObjectPositionAndScale=0
-memory.logGenericPlatformMemoryStats=0
-fx.ParticlePerfStats.Enabled=0
-p.Chaos.VisualDebuggerEnable=0
-fx.EnableCircularAnimTrailDump=0
-r.SceneColorFringe.Max=0
-r.SceneColorFringeQuality=0
-r.Shadow.CachePreshadow=1 
-r.Shadow.CacheWholeSceneShadows=1
-r.UniformBufferPooling=1
-r.RHICmdAsyncRHIThreadDispatch=1
-gc.CreateGCClusters=1
-p.Chaos.PerParticleCollision.ISPC=1
-p.Chaos.Spherical.ISPC=1
-p.Chaos.Spring.ISPC=1
-p.Chaos.TriangleMesh.ISPC=1
-p.Chaos.VelocityField.ISPC=1
-vm.OptimizeVMByteCode=1
-net.TickAllOpenChannels=0
-r.Streaming.DefragDynamicBounds=1
-r.ParallelRendering=1
-r.ParallelTranslucency=1
-r.ParallelVelocity=1
-r.ParallelSceneCapture=1
-r.ParallelRenderUploads=1
-r.ParallelParticleUpdate=1
-r.ParallelMeshMerge=1
-r.ParallelMeshDrawCommands=1
-r.ParallelMeshProcessing=1
-r.ParallelPhysicsScene=1
-r.ParallelAsyncComputeTranslucency=1
-r.ParallelAsyncComputeSkinCache=1
-r.ParallelZPrepass=1
-r.ParallelLandscapeLayerUpdate=1
-r.ParallelLandscapeSplatAtlas=1
-r.ParallelLandscapeSplineUpdate=1
-r.ParallelLandscapeSplineSegmentCalc=1
-r.ParallelDistributedScene=1
-r.ParallelBatchDispatch=1
-r.ParallelCulling=1
-r.ParallelDistanceField=1
-r.ParallelReflectionCaptures=1
-r.ParallelReflectionEnvironment=1
-r.ParallelReflectionShadowing=1
-r.ParallelLightingComposition=1
-r.ParallelLightingSetup=1
-r.ParallelLightingBuild=1
-r.ParallelLightingInject=1
-r.ParallelLightingPropagation=1
-r.ParallelTonemapping=1
-r.ParallelPostProcessing=1
-r.ParallelShadowFade=1
-r.ParallelShadowLights=1
-r.ParallelShadowDepth=1
-r.ParallelShadowFrustums=1
-r.ParallelOnePassPointLightShadowRendering=1
-r.ParallelCascadeShadowMaps=1
-r.ParallelShadowRendering=1
-r.ParallelTranslucentShadowRendering=1
-r.ParallelSceneColorGather=1
-r.ParallelPhysicsStepAsync=1
-r.ParallelDestruction=1
-r.ParallelNavOctreeUpdate=1
-r.ParallelNavBoundsCalc=1
-r.ParallelNavBoundsInit=1
-r.ParallelNavBoundsUpdate=1
-r.ParallelGameThreadInitTasks=1
-r.ParallelGameThreadTickTasks=1
-r.ParallelSkeletalClothUpdate=1
-r.ParallelSkeletalClothSkinning=1
-r.ParallelSkeletalClothBoundsCalc=1
-r.ParallelSkeletalClothGather=1
-r.ParallelSkeletalClothPrepareSim=1
-r.ParallelSkeletalClothSimulate=1
-r.ParallelSkeletalClothUpdateVerts=1
-r.ParallelSkeletalClothUpdateBounds=1
-r.ParallelAnimationUpdate=1
-r.ParallelAnimationEvaluation=1
-r.ParallelAnimationCompression=1
-r.ParallelAnimationRetargeting=1
-r.ParallelAnimationStreaming=1
-r.ParallelAnimationCompressionAsync=1
-r.ParallelAnimationRetargetingAsync=1
-r.ParallelAnimationStreamingAsync=1
-r.ParallelAnimationCacheConversion=1
-r.ParallelAnimationCacheConversionAsync=1
-r.ParallelAnimationCacheStreaming=1
-r.ParallelTaskShaderCompilation=1
-r.ParallelMeshBuildUseJobCulling=1
-r.ParallelMeshBuildUseJobMerging=1
-r.ParallelBasePass=1
-r.ParallelGatherShadowPrimitives=1
-r.ParallelInitViews=1
-r.ParallelPrePass=1
-rhi.ResourceTableCaching=1
-FX.AllowAsyncTick=1
-RHI.SyncThreshold=999
-r.RHICmdUseParallelAlgorithms=1
-r.RHICmdDeferSkeletalLockAndFillToRHIThread=1
-s.ProcessPrestreamingRequests=1
-r.Streaming.StressTest.ExtraAsyncLatency=0
-r.VT.ParallelFeedbackTasks=1
-r.Shadow.Preshadows=1
-r.Shadow.CachePreshadow=1
-r.ExcludeHLODsFromCachedShadows=0
-
-[/Script/WindowsTargetPlatform.WindowsTargetSettings]
-EnableMathOptimisations=True
-
-[DevOptions.Shaders]
-bAllowCompilingThroughWorkers=True
-bAllowAsynchronousShaderCompiling=True
-
-[/Script/Engine.StreamingSettings]
-s.AsyncLoadingThreadEnabled=True
-s.MinBulkDataSizeForAsyncLoading=0
-
-[/Script/Engine.GarbageCollectionSettings]
-gc.CreateGCClusters=1
-gc.AllowParallelGC=1
-r.ShaderDrawDebug=0
-
-[/Script/Engine.Engine]
-bAllowMultiThreadedShaderCompile=True
-
-[/Script/AkAudio.AkSettings]
-bEnableMultiCoreRendering=True
-
-[CrashReportClient]
-bAgreeToCrashUpload=False
-bImplicitSend=False
-
-[Engine.ErrorHandling]
-bPromptForRemoteDebugging=False
-bPromptForRemoteDebugOnEnsure=False
-
-[/Script/WInstrumentedProfilersSettings.WTelemetrySettings]
-bEnableTelemetry=False
-
-[FATHydraCrashHandler]
-LogCrashReportHydra=off
-LogCrashUploader=off
-
-[Core.System]
-+Suppress=ScriptWarning
-+Suppress=Error
-+Suppress=ScriptLog
-+Suppress=Warning
-
-[Core.Log]
-LogPluginManager=all off
-LogOnlineIdentity=all off
-LogOnlineSession=all off
-LogMemory=all off
-LogPakFile=all off
-LogTemp=all off
-LogLinker=all off
-LogOnline=all off
-LogOnlineGame=all off
-LogAnalytics=all off
-LogConfig=all off
-LogInteractiveProcess=all off
-LogInput=all off
-LogOnlineEntitlement=all off
-LogOnlineEvents=all off
-LogOnlineFriend=all off
-LogOnlinePresence=all off
-LogOnlineTitleFile=all off
-LogOnlineUser=all off
-Global=off
-
-[ConsoleVariables]
-; Forces 100% resolution scale (Disables Dynamic Resolution)
-r.DynamicRes.OperationMode=0
-r.DynamicRes.MinResolutionRatio=100
-r.DynamicRes.MaxResolutionRatio=100
-r.ScreenPercentage=100
-
-; Disables Motion Blur
-r.MotionBlurQuality=0
-
-; Disables Film Grain
-r.Tonemapper.GrainQuantization=0
-
-; Disables Depth of Field (Background blur)
-r.DepthOfFieldQuality=0
-r.DepthOfField.FarBlur=0
-```
-
-###  🌟 Optional: Ultra Graphics Configuration (8GB+ VRAM)
-If you have a high-end GPU with plenty of VRAM (like an RTX 5070 or better) and a solid frame rate (60+ FPS), you can push the Unreal Engine 4 well past the game's official "High" settings in the menu.
-
-Replace only the `[ConsoleVariables]` section at the very bottom of your Engine.ini with this block. It forces 4K shadows, maximum draw distance (eliminating texture pop-in), and cinematic anti-aliasing:
-
-```ini
-[ConsoleVariables]
-; --- 1. PURE NATIVE RESOLUTION & CLEAN IMAGE ---
-r.DynamicRes.OperationMode=0
-r.DynamicRes.MinResolutionRatio=100
-r.DynamicRes.MaxResolutionRatio=100
-r.ScreenPercentage=100
-r.MotionBlurQuality=0
-r.Tonemapper.GrainQuantization=0
-r.DepthOfFieldQuality=0
-r.DepthOfField.FarBlur=0
-
-; --- 2. EXTREME SHADOW QUALITY (4K) ---
-r.Shadow.MaxResolution=4096
-r.Shadow.MaxCSMResolution=4096
-r.Shadow.DistanceScale=2.0
-r.Shadow.CSM.MaxCascades=4
-r.Shadow.RadiusThreshold=0.01
-
-; --- 3. ELIMINATE POP-IN (AGGRESSIVE LOD) ---
-r.StaticMeshLODDistanceScale=0.1
-r.SkeletalMeshLODBias=-2
-r.ViewDistanceScale=3.0
-foliage.LODDistanceScale=3.0
-
-; --- 4. ENHANCED TEXTURES & REFLECTIONS ---
-r.MaxAnisotropy=16
-r.SSR.Quality=4
-r.Color.Fringe=0
-
-; --- 5. CINEMATIC ANTI-ALIASING (TAA) ---
-r.PostProcessAAQuality=6
-r.TemporalAA.Algorithm=1
-r.TemporalAASamples=32
-```
+Use the appropriate file when running the installation scripts, or copy its contents to your local Engine.ini file if installing manually.
 
 ---
 
 ## 🪟 Windows Installation
 
-### 1. Install the Mods
-1. Navigate to your game installation folder: `[Steam Library]\steamapps\common\FINAL FANTASY VII REMAKE\End\Binaries\Win64`
-2. Extract the `xinput1_3.dll` from the **FFVIIHook** zip file into this folder.
-3. Extract the contents of the **Luma** mod into the same `Win64` folder. The important files are `dxgi.dll` and the accompanying Luma configuration files.
+### Automated Installation (Recommended)
 
-### 2. Apply the Engine Config
+If you have this repository cloned, use the provided PowerShell script to automate mods, config deployment, and setup:
+
+```powershell
+.\setup-windows.ps1 --GamePath "C:\Program Files (x86)\Steam\steamapps\common\FINAL FANTASY VII REMAKE" --EngineLni .\Engine.ini
+```
+
+**Key Parameters:**
+
+- `--GamePath` — Path to FF7 Remake installation (auto-detects if omitted)
+- `--EngineLni` — Path to Engine.ini file (default: `.\Engine.ini`)
+- `--LumaOnly` — Install only Luma, skip FFVIIHook and config
+- `--SkipHook` — Skip FFVIIHook (xinput1_3.dll) installation
+- `--SkipLuma` — Skip Luma mod installation
+- `--SkipConfig` — Skip Engine.ini deployment
+- `--DryRun` — Preview all planned installations without making changes
+- `--Help` — Display full help documentation
+
+**Common Examples:**
+
+```powershell
+# Auto-detect game path, use standard Engine.ini
+.\setup-windows.ps1
+
+# Ultra-graphics config (8GB+ VRAM)
+.\setup-windows.ps1 --EngineLni .\Engine-full-res.ini
+
+# Custom game installation path
+.\setup-windows.ps1 --GamePath "D:\Games\FINAL FANTASY VII REMAKE"
+
+# Preview changes without installation
+.\setup-windows.ps1 --DryRun
+
+# Install only Luma mod
+.\setup-windows.ps1 --LumaOnly
+```
+
+> [!IMPORTANT]
+> The script must run with **user privileges** (not as Administrator). If you installed Steam in a restricted location that requires admin access, you will need to run the installation steps manually or provide appropriate permissions.
+
+> [!NOTE]
+> After the script completes, you **must manually set the Steam launch option** (see "Manual Steam Launch Options" below). The script will display instructions on how to do this.
+
+---
+
+### Manual Installation (Alternative)
+
+If you prefer to install manually or the script doesn't work for your setup:
+
+#### 1. Install the Mods
+1. Navigate to your game installation folder: `[Steam Library]\steamapps\common\FINAL FANTASY VII REMAKE\End\Binaries\Win64`
+2. Extract the `xinput1_3.dll` from the **FFVIIHook** folder into this folder.
+3. Extract the contents of the **Luma** mod (from the `.zip` file) into the same `Win64` folder. The important files are `dxgi.dll` and the accompanying Luma configuration files.
+
+#### 2. Apply the Engine Config
 1. Go to your Documents folder:
    `%USERPROFILE%\Documents\My Games\FINAL FANTASY VII REMAKE\Saved\Config\WindowsNoEditor\`
-2. Open `Engine.ini` (create it if it doesn't exist) and paste the master configuration provided above. Save and close.
+2. Open `Engine.ini` (create it if it doesn't exist) and paste the master configuration provided at the top of this guide. Save and close.
 
-### 3. Steam Launch Options
+#### 3. Manual Steam Launch Options
 1. Right-click the game in your Steam Library > **Properties** > **General**.
 2. Under **Launch Options**, type:
-  `-dx11`
-  *(Luma for FF7 Remake is currently a DX11-only mod. Do not use `-dx12` for this mod.)*
+   ```
+   -dx11
+   ```
+   *(Luma for FF7 Remake is currently a DX11-only mod. Do not use `-dx12` for this mod.)*
 
 Once you launch the game, wait for the main menu to load. Press the **`Home`** or **`Insert`** key to open the Luma overlay, where you can select your preferred upscaler and image settings.
 
@@ -343,6 +122,76 @@ Linux requires a couple of extra Proton runtime steps so the Luma DLL can load c
 
 > [!IMPORTANT]
 > Luma for FF7 Remake is **DX11-only**. Use `-dx11`, not `-dx12`.
+
+If you want to automate the Linux setup from this repo, run:
+
+```bash
+chmod +x ./setup-linux.sh
+./setup-linux.sh --steam-install deb --engine-ini ./Engine.ini --gpu nvidia
+```
+
+Use `./setup-linux.sh --help` to see optional flags such as `--steam-install`, `--custom-steam-root`, `--luma-only`, or `--dry-run`.
+
+> [!NOTE]
+> Run `./setup-linux.sh` as your normal user, not with `sudo`. The script will call `sudo` by itself only if it needs to install Ubuntu packages such as `protontricks`, `gamemode`, or `mangohud`.
+
+> [!NOTE]
+> If `protontricks` is not already installed on Ubuntu, the script will try to install it automatically unless you pass `--skip-packages`. If you use `--skip-packages`, or you are on a distro without `apt`, then `protontricks` must already be installed before the script can run the prefix setup step.
+
+### Automated Install Examples
+
+Use the script below if you want it to install the repo's bundled FFVIIHook + Luma files, copy your chosen config as `Engine.ini`, install Proton dependencies, and print the final Steam launch options for you.
+
+**Default install using this repo's standard `Engine.ini`:**
+
+```bash
+chmod +x ./setup-linux.sh
+./setup-linux.sh --steam-install deb --engine-ini ./Engine.ini --gpu nvidia
+```
+
+**Full install using the higher-quality config file instead:**
+
+```bash
+chmod +x ./setup-linux.sh
+./setup-linux.sh --steam-install deb --engine-ini ./Engine-full-res.ini --gpu nvidia
+```
+
+**Full install for Flatpak Steam:**
+
+```bash
+chmod +x ./setup-linux.sh
+./setup-linux.sh --steam-install flatpak --engine-ini ./Engine.ini --gpu nvidia
+```
+
+**Full install for a custom Steam directory:**
+
+```bash
+chmod +x ./setup-linux.sh
+./setup-linux.sh --steam-install custom --custom-steam-root "/path/to/Steam" --engine-ini ./Engine.ini --gpu nvidia
+```
+
+**Preview everything first without changing files:**
+
+```bash
+chmod +x ./setup-linux.sh
+./setup-linux.sh --steam-install deb --engine-ini ./Engine.ini --gpu nvidia --dry-run
+```
+
+Parameter summary:
+
+* `--engine-ini ./Engine.ini` or `--engine-ini ./Engine-full-res.ini`: Selects the source config file. The destination is always written as `Engine.ini` inside the Proton prefix.
+* `--steam-install deb`: Use this when Steam was installed from the `.deb` package.
+* `--steam-install flatpak`: Use this when Steam was installed from the app center / Flatpak.
+* `--steam-install custom --custom-steam-root "/path/to/Steam"`: Use this when your Steam installation lives in a non-standard directory. The path must contain `steamapps`.
+* `--gpu nvidia`: Forces NVIDIA PRIME launch variables into the generated Steam launch options.
+* `--dry-run`: Shows exactly what the script would do without modifying anything.
+
+If you only want Luma without FFVIIHook/SPF, use:
+
+```bash
+chmod +x ./setup-linux.sh
+./setup-linux.sh --steam-install deb --engine-ini ./Engine.ini --luma-only --gpu nvidia
+```
 
 ### 1. Install the Essential Mods
 1. Navigate to your game installation folder. Common Steam install roots on Linux are:
@@ -370,10 +219,13 @@ Linux requires a couple of extra Proton runtime steps so the Luma DLL can load c
 1. Navigate to the game's compatdata (prefix) config folder. Common locations are:
   - `~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/` **(.deb package, downloaded from offical Steam site)**
   - `~/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/` **(Flatpak Steam)**
-    > [!TIP] 
-    > If `WindowsNoEditor` folder does not exist, create it with 
-    > * `mkdir WindowsNoEditor` or
-    > * `mkdir -p "~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/"`
+
+> [!TIP]
+> If `WindowsNoEditor` folder does not exist, create it with 
+> * `mkdir WindowsNoEditor` or
+> * `mkdir -p "~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/"`
+
+
 2. If the `compatdata/1462040` folder does not exist yet, launch the game once through Steam to create the prefix.
 3. Open or create the `Engine.ini` file and paste the master configuration provided above.
 
@@ -439,7 +291,7 @@ Because `mangohud` is included in the Launch Options command above, the overlay 
 
 ---
 
-## 🎮 Bonus: Native DualSense (PS5) Support
+## 🎮 Native DualSense (PS5) Support
 
 If you use a PS5 controller and want to see the original PlayStation button prompts (Triangle, Circle, Cross, Square) in the game's UI instead of generic Xbox icons:
 
