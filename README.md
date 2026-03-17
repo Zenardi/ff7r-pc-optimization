@@ -4,8 +4,8 @@ This repository provides a comprehensive guide to fixing the notorious Unreal En
 
 This guide covers the installation of essential mods and crucial OS-level configurations:
 1. **[FFVIIHook](https://www.nexusmods.com/finalfantasy7remake/mods/74):** Unlocks the developer console and allows custom `Engine.ini` configurations.
-2. **[SPF (Stuttering Prevention Fix)](https://www.nexusmods.com/finalfantasy7remake/mods/66):** Re-architects CPU thread allocation to prevent shader compilation stutters.
-3. **[Luma - DLSS/FSR Upscaling Mod](https://www.nexusmods.com/finalfantasy7remake/mods/1974):** Replaces the default dynamic resolution with NVIDIA DLSS / AMD FSR and enables Frame Generation (Optional - Windows/DX12 focus).
+2. **[SPF (Stuttering Prevention Fix)](https://www.nexusmods.com/finalfantasy7remake/mods/1628):** Re-architects CPU thread allocation to prevent shader compilation stutters.
+3. **[Luma - DLSS/FSR Upscaling Mod](https://www.nexusmods.com/finalfantasy7remake/mods/1974):** A DX11-only mod that replaces the game's TAA with NVIDIA DLSS / AMD FSR and can be used on both Windows and Linux.
 
 - [FF7 Remake: The Ultimate Performance \& Stuttering Fix (Windows \& Linux)](#ff7-remake-the-ultimate-performance--stuttering-fix-windows--linux)
   - [⚙️ The Master `Engine.ini` Configuration](#️-the-master-engineini-configuration)
@@ -16,9 +16,10 @@ This guide covers the installation of essential mods and crucial OS-level config
     - [3. Steam Launch Options](#3-steam-launch-options)
   - [🐧 Linux (Ubuntu / Pop!\_OS / Steam Deck) Configuration](#-linux-ubuntu--pop_os--steam-deck-configuration)
     - [1. Install the Essential Mods](#1-install-the-essential-mods)
-    - [2. Apply the Engine Config](#2-apply-the-engine-config-1)
-    - [3. Proper NVIDIA Driver Installation (Modern RTX Series)](#3-proper-nvidia-driver-installation-modern-rtx-series)
-    - [4. Steam Launch Options (The Crucial Step)](#4-steam-launch-options-the-crucial-step)
+    - [2. Install Luma's Proton Dependencies](#2-install-lumas-proton-dependencies)
+    - [3. Apply the Engine Config](#3-apply-the-engine-config)
+    - [4. Proper NVIDIA Driver Installation (Modern RTX Series)](#4-proper-nvidia-driver-installation-modern-rtx-series)
+    - [5. Steam Launch Options (The Crucial Step)](#5-steam-launch-options-the-crucial-step)
   - [📊 Linux: Monitoring Performance with MangoHud](#-linux-monitoring-performance-with-mangohud)
     - [1. Installation](#1-installation)
     - [2. In-Game Usage](#2-in-game-usage)
@@ -274,7 +275,7 @@ r.DepthOfField.FarBlur=0
 ###  🌟 Optional: Ultra Graphics Configuration (8GB+ VRAM)
 If you have a high-end GPU with plenty of VRAM (like an RTX 5070 or better) and a solid frame rate (60+ FPS), you can push the Unreal Engine 4 well past the game's official "High" settings in the menu.
 
-Replace only the [ConsoleVariables] section at the very bottom of your Engine.ini with this block. It forces 4K shadows, maximum draw distance (eliminating texture pop-in), and cinematic anti-aliasing:
+Replace only the `[ConsoleVariables]` section at the very bottom of your Engine.ini with this block. It forces 4K shadows, maximum draw distance (eliminating texture pop-in), and cinematic anti-aliasing:
 
 ```ini
 [ConsoleVariables]
@@ -319,7 +320,7 @@ r.TemporalAASamples=32
 ### 1. Install the Mods
 1. Navigate to your game installation folder: `[Steam Library]\steamapps\common\FINAL FANTASY VII REMAKE\End\Binaries\Win64`
 2. Extract the `xinput1_3.dll` from the **FFVIIHook** zip file into this folder.
-3. Extract the contents of the **Luma** mod (which includes `dxgi.dll` and its configuration files) into the same `Win64` folder.
+3. Extract the contents of the **Luma** mod into the same `Win64` folder. The important files are `dxgi.dll` and the accompanying Luma configuration files.
 
 ### 2. Apply the Engine Config
 1. Go to your Documents folder:
@@ -329,34 +330,57 @@ r.TemporalAASamples=32
 ### 3. Steam Launch Options
 1. Right-click the game in your Steam Library > **Properties** > **General**.
 2. Under **Launch Options**, type:
-   `-dx12`
-   *(Note: Luma requires DirectX 12 to run DLSS and Frame Generation).*
+  `-dx11`
+  *(Luma for FF7 Remake is currently a DX11-only mod. Do not use `-dx12` for this mod.)*
 
-Once you launch the game, wait for the main menu to load. Press the **`Home`** or **`Insert`** key to open the Luma overlay, where you can select your preferred Upscaler (DLSS/FSR) and enable Frame Generation.
+Once you launch the game, wait for the main menu to load. Press the **`Home`** or **`Insert`** key to open the Luma overlay, where you can select your preferred upscaler and image settings.
 
 ---
 
 ## 🐧 Linux (Ubuntu / Pop!_OS / Steam Deck) Configuration
 
-Linux requires specific environment variables to bypass Proton's default libraries and load the injected `.dll` files properly. Furthermore, laptops with hybrid graphics (NVIDIA Optimus) need explicit commands to utilize the dedicated GPU.
+Linux requires a couple of extra Proton runtime steps so the Luma DLL can load correctly inside the game's prefix. If you are also using FFVIIHook/SPF, keep its DLL override alongside the Luma one.
 
-> [!IMPORTANT] 
-> ⚠️ LINUX PERFORMANCE WARNING (DX11 vs DX12) ⚠️
-> 
-> The *Luma* mod **requires** DirectX 12 (`-dx12`). However, UE4's DX12 implementation is notoriously poorly optimized and may still cause severe stutters on Linux via VKD3D translation, even with high-end hardware. 
-> 
-> **For the absolute smoothest experience on Linux:** We highly recommend prioritizing raw stability over AI Frame Generation. Do not install the Luma mod (`dxgi.dll`), and use `-dx11` instead. DXVK (DirectX 11 to Vulkan) handles this game's shader compilation significantly better. The instructions below reflect this optimized approach.
+> [!IMPORTANT]
+> Luma for FF7 Remake is **DX11-only**. Use `-dx11`, not `-dx12`.
 
 ### 1. Install the Essential Mods
-1. Navigate to your game installation folder. The default path for the `.deb` Steam installation is: `~/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64`
-2. Extract **only** `xinput1_3.dll` (FFVIIHook) into this folder. 
+1. Navigate to your game installation folder. Common Steam install roots on Linux are:
+  - `~/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64` **(.deb package, downloaded from offical Steam site)**
+  - `~/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64` **(Flatpak Steam)**
+2. Extract `xinput1_3.dll` from **FFVIIHook** into this folder.
+3. Extract the **Luma** mod into the same folder so that `dxgi.dll` and the bundled Luma files sit next to the game executable.
 
-### 2. Apply the Engine Config
-1. Navigate to the game's compatdata (prefix) folder:
-   `~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/`
-2. Open or create the `Engine.ini` file and paste the master configuration provided above.
+### 2. Install Luma's Proton Dependencies
+1. On Ubuntu, install `protontricks` first:
+    ```bash
+    sudo apt update && sudo apt install protontricks -y
+    ```
+2. If Ubuntu reports that the package cannot be found, enable the `universe` repository and retry:
+    ```bash
+    sudo add-apt-repository universe
+    sudo apt update && sudo apt install protontricks -y
+    ```
+3. Install the required runtime components into FF7 Remake's Proton prefix:
+    ```bash
+    protontricks 1462040 msvcrt40 vcrun2022
+    ```
 
-### 3. Proper NVIDIA Driver Installation (Modern RTX Series)
+### 3. Apply the Engine Config
+1. Navigate to the game's compatdata (prefix) config folder. Common locations are:
+  - `~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/` **(.deb package, downloaded from offical Steam site)**
+  - `~/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/` **(Flatpak Steam)**
+    > [!TIP] 
+    > If `WindowsNoEditor` folder does not exist, create it with 
+    > * `mkdir WindowsNoEditor` or
+    > * `mkdir -p "~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/"`
+2. If the `compatdata/1462040` folder does not exist yet, launch the game once through Steam to create the prefix.
+3. Open or create the `Engine.ini` file and paste the master configuration provided above.
+
+> [!NOTE]
+> `1462040` Final Fantasy Remake's game id 
+
+### 4. Proper NVIDIA Driver Installation (Modern RTX Series)
 Newer graphics cards (like the RTX 50-series) require the new Open GPU Kernel Modules. If your game is running at very low framerates (e.g., 15 FPS), your system might be failing to load the older proprietary drivers and defaulting to integrated graphics.
 
 **Step-by-step to install the correct architecture on Ubuntu:**
@@ -372,21 +396,28 @@ Newer graphics cards (like the RTX 50-series) require the new Open GPU Kernel Mo
 3. **Reboot your computer.** (Mandatory for the Kernel to load the new module into memory).
 4. After rebooting, verify the installation by running `nvidia-smi` in the terminal. If it returns `No devices were found`, ensure that **Secure Boot** is disabled in your motherboard's BIOS, as it blocks third-party modules from loading.
 
-### 4. Steam Launch Options (The Crucial Step)
-To ensure the game uses the dedicated GPU, loads the CPU optimization mod (SPF), runs on the stable DX11 API, and enables telemetry, use the following command in the game's **Launch Options** on Steam:
+### 5. Steam Launch Options (The Crucial Step)
+To ensure the game uses the dedicated GPU, loads both FFVIIHook/SPF and Luma correctly, runs on DX11, and enables telemetry, use the following command in the game's **Launch Options** on Steam:
 
 ```bash
-__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia WINEDLLOVERRIDES="xinput1_3=n,b" gamemoderun mangohud %command% -dx11
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" gamemoderun mangohud %command% -dx11
 ```
+
+> [!TIP]
+> If you prefer, remove `mangohud` if you dont care about displaying telemetry overlay
 
 **What this command does:**
 * `__NV_PRIME...` & `__GLX_VENDOR...`: Forces the system to use the dedicated NVIDIA GPU.
-* `WINEDLLOVERRIDES="xinput1_3=n,b"`: Ensures the proper injection of the SPF mod.
+* `WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b"`: Ensures both FFVIIHook/SPF and the Luma `dxgi.dll` are injected correctly.
 * `gamemoderun`: Enables Feral GameMode for maximum processing priority.
 * `mangohud`: Displays the telemetry overlay.
 * `-dx11`: Forces DirectX 11.
 
-*(Note: If you insist on trying the Luma DLSS/FSR Mod on Linux, you must add `;dxgi=n,b` to the `WINEDLLOVERRIDES`, add `PROTON_ENABLE_NVAPI=1` to the beginning, and change `-dx11` to `-dx12`).*
+If you are installing **only** Luma and not FFVIIHook/SPF, you can reduce the DLL override to:
+
+```bash
+WINEDLLOVERRIDES="dxgi=n,b" %command% -dx11
+```
 
 ---
 
