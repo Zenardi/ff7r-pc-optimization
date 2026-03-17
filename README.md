@@ -1,11 +1,11 @@
 # FF7 Remake: The Ultimate Performance & Stuttering Fix (Windows & Linux)
 
-This repository provides a comprehensive guide to fixing the notorious Unreal Engine 4 stuttering issues in *Final Fantasy VII Remake Intergrade* on PC, while injecting modern upscaling technologies (DLSS/FSR and Frame Generation).
+This repository provides a comprehensive guide to fixing the notorious Unreal Engine 4 stuttering issues in *Final Fantasy VII Remake Intergrade* on PC, while offering options for modern upscaling technologies (DLSS/FSR) and raw stability.
 
-This guide compiles the installation of three essential mods:
+This guide covers the installation of essential mods and crucial OS-level configurations:
 1. **[FFVIIHook](https://www.nexusmods.com/finalfantasy7remake/mods/74):** Unlocks the developer console and allows custom `Engine.ini` configurations.
 2. **[SPF (Stuttering Prevention Fix)](https://www.nexusmods.com/finalfantasy7remake/mods/66):** Re-architects CPU thread allocation to prevent shader compilation stutters.
-3. **[Luma - DLSS/FSR Upscaling Mod](https://www.nexusmods.com/finalfantasy7remake/mods/1974):** Replaces the default dynamic resolution with NVIDIA DLSS / AMD FSR and enables Frame Generation.
+3. **[Luma - DLSS/FSR Upscaling Mod](https://www.nexusmods.com/finalfantasy7remake/mods/1974):** Replaces the default dynamic resolution with NVIDIA DLSS / AMD FSR and enables Frame Generation (Optional - Windows/DX12 focus).
 
 - [FF7 Remake: The Ultimate Performance \& Stuttering Fix (Windows \& Linux)](#ff7-remake-the-ultimate-performance--stuttering-fix-windows--linux)
   - [⚙️ The Master `Engine.ini` Configuration](#️-the-master-engineini-configuration)
@@ -13,22 +13,22 @@ This guide compiles the installation of three essential mods:
     - [1. Install the Mods](#1-install-the-mods)
     - [2. Apply the Engine Config](#2-apply-the-engine-config)
     - [3. Steam Launch Options](#3-steam-launch-options)
-  - [🐧 Linux / Steam Deck Installation (Proton)](#-linux--steam-deck-installation-proton)
-    - [1. Install the Mods](#1-install-the-mods-1)
+  - [🐧 Linux (Ubuntu / Pop!\_OS / Steam Deck) Configuration](#-linux-ubuntu--pop_os--steam-deck-configuration)
+    - [1. Install the Essential Mods](#1-install-the-essential-mods)
     - [2. Apply the Engine Config](#2-apply-the-engine-config-1)
-    - [3. Steam Launch Options (The Crucial Step)](#3-steam-launch-options-the-crucial-step)
-    - [🎮 In-Game Activation](#-in-game-activation)
-  - [📊 Linux Bonus: Monitoring Performance with MangoHud](#-linux-bonus-monitoring-performance-with-mangohud)
+    - [3. Proper NVIDIA Driver Installation (Modern RTX Series)](#3-proper-nvidia-driver-installation-modern-rtx-series)
+    - [4. Steam Launch Options (The Crucial Step)](#4-steam-launch-options-the-crucial-step)
+  - [📊 Linux: Monitoring Performance with MangoHud](#-linux-monitoring-performance-with-mangohud)
     - [1. Installation](#1-installation)
-    - [2. Steam Launch Options Integration](#2-steam-launch-options-integration)
-    - [3. In-Game Usage](#3-in-game-usage)
-
+    - [2. In-Game Usage](#2-in-game-usage)
+  - [🎮 Bonus: Native DualSense (PS5) Support](#-bonus-native-dualsense-ps5-support)
+    - [🖥️ Tested Environment](#️-tested-environment)
 
 ---
 
 ## ⚙️ The Master `Engine.ini` Configuration
 
-Both Windows and Linux installations will require this highly optimized configuration block. It combines the SPF multithreading tweaks with forced 100% native resolution, disabling the game's aggressive dynamic resolution scaling and blur effects.
+Both Windows and Linux installations will require this highly optimized configuration block. It combines the SPF multithreading tweaks with forced 100% native resolution, disabling the game's aggressive dynamic resolution scaling, motion blur, and depth of field.
 
 Create or edit your `Engine.ini` file (paths provided in the OS sections below) and paste the following:
 
@@ -47,7 +47,7 @@ r.CreateShadersOnLoad=1
 r.UseShaderCaching=1
 r.AsyncCompute=1
 r.AsyncPipelineCompile=1
-r.GTSyncType=1	
+r.GTSyncType=1 
 r.DontLimitOnBattery=1
 r.AOAsyncBuildQueue=1
 r.RDG.AsyncCompute=1
@@ -65,7 +65,7 @@ r.Streaming.UseNewMetrics=1
 r.Streaming.LimitPoolSizeToVRAM=1
 r.OneFrameThreadLag=1
 r.RHICmdCollectRHIThreadStatsFromHighLevel=0
-r.RHICmdBufferWriteLocks=0	
+r.RHICmdBufferWriteLocks=0 
 r.VolumetricRenderTarget.PreferAsyncCompute=1
 r.Distortion=0
 r.DisableDistortion=1
@@ -290,72 +290,94 @@ r.DepthOfField.FarBlur=0
    `-dx12`
    *(Note: Luma requires DirectX 12 to run DLSS and Frame Generation).*
 
+Once you launch the game, wait for the main menu to load. Press the **`Home`** or **`Insert`** key to open the Luma overlay, where you can select your preferred Upscaler (DLSS/FSR) and enable Frame Generation.
+
 ---
 
-## 🐧 Linux / Steam Deck Installation (Proton)
+## 🐧 Linux (Ubuntu / Pop!_OS / Steam Deck) Configuration
 
-Linux requires specific environment variables to bypass Proton's default libraries and load the injected `.dll` files properly. 
-
-### 1. Install the Mods
-1. Navigate to your game installation folder: `~/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64`
-2. Extract both `xinput1_3.dll` (FFVIIHook) and `dxgi.dll` (Luma) into this folder.
-
-### 2. Apply the Engine Config
-1. Navigate to the game's compatdata (prefix) folder. The default path is:
-   `~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/`
-2. Open or create the `Engine.ini` file and paste the master configuration provided above.
-
-### 3. Steam Launch Options (The Crucial Step)
-To ensure Proton loads the mods natively and exposes your GPU's DLSS/FSR capabilities, you must set specific overrides.
-
-1. Right-click the game in your Steam Library > **Properties** > **General**.
-2. Under **Launch Options**, paste the following:
-
-   ```bash
-   PROTON_ENABLE_NVAPI=1 WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" gamemoderun %command% -dx12
-   ```
+Linux requires specific environment variables to bypass Proton's default libraries and load the injected `.dll` files properly. Furthermore, laptops with hybrid graphics (NVIDIA Optimus) need explicit commands to utilize the dedicated GPU.
 
 > [!IMPORTANT] 
 > ⚠️ LINUX PERFORMANCE WARNING (DX11 vs DX12) ⚠️
 > 
-> The *Luma* mod **requires** DirectX 12 (`-dx12`). However, UE4's DX12 implementation is notoriously poorly optimized and may still cause minor stutters on Linux via VKD3D translation, even with high-end hardware. 
+> The *Luma* mod **requires** DirectX 12 (`-dx12`). However, UE4's DX12 implementation is notoriously poorly optimized and may still cause severe stutters on Linux via VKD3D translation, even with high-end hardware. 
 > 
-> **For the absolute smoothest experience on Linux:** If you have a powerful GPU and prefer raw stability over AI Frame Generation, delete the Luma mod (`dxgi.dll`), remove `dxgi=n,b` and `NVAPI` from your launch options, and use `-dx11` instead. DXVK (DirectX 11 to Vulkan) handles this game's shader compilation significantly better.
+> **For the absolute smoothest experience on Linux:** We highly recommend prioritizing raw stability over AI Frame Generation. Do not install the Luma mod (`dxgi.dll`), and use `-dx11` instead. DXVK (DirectX 11 to Vulkan) handles this game's shader compilation significantly better. The instructions below reflect this optimized approach.
+
+### 1. Install the Essential Mods
+1. Navigate to your game installation folder. The default path for the `.deb` Steam installation is: `~/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64`
+2. Extract **only** `xinput1_3.dll` (FFVIIHook) into this folder. 
+
+### 2. Apply the Engine Config
+1. Navigate to the game's compatdata (prefix) folder:
+   `~/.local/share/Steam/steamapps/compatdata/1462040/pfx/drive_c/users/steamuser/Documents/My Games/FINAL FANTASY VII REMAKE/Saved/Config/WindowsNoEditor/`
+2. Open or create the `Engine.ini` file and paste the master configuration provided above.
+
+### 3. Proper NVIDIA Driver Installation (Modern RTX Series)
+Newer graphics cards (like the RTX 50-series) require the new Open GPU Kernel Modules. If your game is running at very low framerates (e.g., 15 FPS), your system might be failing to load the older proprietary drivers and defaulting to integrated graphics.
+
+**Step-by-step to install the correct architecture on Ubuntu:**
+
+1. Clean up any residual old drivers:
+   ```bash
+   sudo apt purge '^nvidia-.*' -y && sudo apt autoremove -y
+   ```
+2. Install the recommended open driver and essential Vulkan tools (using version 580 as an example):
+   ```bash
+   sudo apt update && sudo apt install nvidia-driver-580-open mesa-utils vulkan-tools -y
+   ```
+3. **Reboot your computer.** (Mandatory for the Kernel to load the new module into memory).
+4. After rebooting, verify the installation by running `nvidia-smi` in the terminal. If it returns `No devices were found`, ensure that **Secure Boot** is disabled in your motherboard's BIOS, as it blocks third-party modules from loading.
+
+### 4. Steam Launch Options (The Crucial Step)
+To ensure the game uses the dedicated GPU, loads the CPU optimization mod (SPF), runs on the stable DX11 API, and enables telemetry, use the following command in the game's **Launch Options** on Steam:
+
+```bash
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia WINEDLLOVERRIDES="xinput1_3=n,b" gamemoderun mangohud %command% -dx11
+```
+
+**What this command does:**
+* `__NV_PRIME...` & `__GLX_VENDOR...`: Forces the system to use the dedicated NVIDIA GPU.
+* `WINEDLLOVERRIDES="xinput1_3=n,b"`: Ensures the proper injection of the SPF mod.
+* `gamemoderun`: Enables Feral GameMode for maximum processing priority.
+* `mangohud`: Displays the telemetry overlay.
+* `-dx11`: Forces DirectX 11.
+
+*(Note: If you insist on trying the Luma DLSS/FSR Mod on Linux, you must add `;dxgi=n,b` to the `WINEDLLOVERRIDES`, add `PROTON_ENABLE_NVAPI=1` to the beginning, and change `-dx11` to `-dx12`).*
 
 ---
 
-### 🎮 In-Game Activation
-Once you launch the game, wait for the main menu to load. Press the **`Home`** or **`Insert`** key to open the Luma overlay, where you can select your preferred Upscaler (DLSS/FSR) and enable Frame Generation. 
+## 📊 Linux: Monitoring Performance with MangoHud
 
----
-
-## 📊 Linux Bonus: Monitoring Performance with MangoHud
-
-To truly validate if the stuttering is gone and if Frame Generation is delivering stable frametimes, you can use **MangoHud**, the standard performance overlay for Linux (the equivalent of MSI Afterburner/RivaTuner).
+To truly validate if the stuttering is gone, you can use **MangoHud**, the standard performance overlay for Linux.
 
 ### 1. Installation 
 For Ubuntu, Pop!_OS, or Debian-based distributions, open your terminal and install the package:
 ```bash
 sudo apt update && sudo apt install mangohud -y
 ```
-*(Note: If you are using the Flatpak version of Steam, install it via: `flatpak install flathub org.freedesktop.Platform.VulkanLayer.MangoHud`)*
 
-### 2. Steam Launch Options Integration
-To inject the telemetry overlay into the game, simply add `mangohud` right before the `%command%` variable in your Steam Launch Options.
+### 2. In-Game Usage
+Because `mangohud` is included in the Launch Options command above, the overlay will automatically appear in the top-left corner when the game starts. 
+* Ensure the very top line displays your NVIDIA GPU (not integrated graphics or DXVK generic names).
+* Pay close attention to the **Frametime graph**. A perfectly flat line means the engine optimizations are working flawlessly.
+* *Tip: Press `Right Shift + F12` to toggle the overlay on and off.*
 
-Your final, complete Linux launch command will look like this:
+---
 
-**For the Luma DLSS/FSR Setup (DX12):**
-```bash
-PROTON_ENABLE_NVAPI=1 WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" gamemoderun mangohud %command% -dx12
-```
+## 🎮 Bonus: Native DualSense (PS5) Support
 
-**For the Pure Stability Setup (DX11, no Luma):**
-```bash
-WINEDLLOVERRIDES="xinput1_3=n,b" gamemoderun mangohud %command% -dx11
-```
+If you use a PS5 controller and want to see the original PlayStation button prompts (Triangle, Circle, Cross, Square) in the game's UI instead of generic Xbox icons:
 
-### 3. In-Game Usage
-Once the game launches, the MangoHud overlay will appear in the top-left corner. Pay close attention to the **Frametime graph** (the horizontal line plot). A perfectly flat line means the engine optimizations from the `Engine.ini` are working flawlessly, delivering a smooth, stutter-free experience. 
+1. Go to the game's **Properties** in Steam.
+2. In the **Controller** tab, change the override option to **Disable Steam Input**.
 
-*Tip: You can press `Right Shift + F12` on your keyboard to toggle the overlay on and off during gameplay.*
+This forces Steam to stop translating the inputs, allowing the game to read the DualSense signals directly via Proton and natively activating the correct visual prompts without the need for visual mods.
+
+### 🖥️ Tested Environment
+The configurations, driver installations, and launch parameters in this guide were successfully tested and validated on the following setup:
+* **OS:** Ubuntu 25.10
+* **GPU:** NVIDIA GeForce RTX 5070 Max-Q / Mobile (Open Kernel Driver: 580.126.09)
+* **Graphics API:** DirectX 11 (via DXVK translation)
+* **Controller:** PS5 DualSense (Native input, Steam Input disabled)
