@@ -312,6 +312,11 @@ WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" %command% -dx11
 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" gamemoderun mangohud %command% -dx11
 ```
 
+**Stable 60fps for my current laptop with GTX 5070**
+```bash
+MANGOHUD_CONFIG=fps_limit=0 vblank_mode=0 __GL_SYNC_TO_VBLANK=0 DXVK_FRAME_RATE=0 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" mangohud %command% -dx11
+```
+
 **What each part does:**
 * `WINEDLLOVERRIDES="dxgi=n,b"` — Loads Luma's dxgi.dll
 * `WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b"` — Loads both FFVIIHook and Luma
