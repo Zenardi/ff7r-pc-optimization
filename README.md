@@ -315,7 +315,7 @@ DXVK_ASYNC=1 DXVK_FRAME_RATE=60 __GL_SYNC_TO_VBLANK=0 __GL_SYNC_DISPLAY_DEVICE=a
 ```
 
 > [!NOTE]
-> It was noted that this command reduced stuttering issue, but issue still persist but with less and less agressive frame drops. To be very frank, I've already optimized the engine (internal I/O) and the graphics API (DXVK/Vulkan) to the limit and the frame drop persists, I've hit the ceiling of what the Square Enix port allows in terms of software. 
+> It was noted that this command reduced stuttering issue, but issue still persist but with less agressive frame drops, and it recovers more quickly from them. To be very frank, I've already optimized the engine (internal I/O) and the graphics API (DXVK/Vulkan) to the limit and the frame drop persists, I've hit the ceiling of what the Square Enix port allows in terms of software. 
 
 
 ---
