@@ -10,20 +10,21 @@ This guide covers the installation of essential mods and crucial OS-level config
 - [FF7 Remake: The Ultimate Performance \& Stuttering Fix (Windows \& Linux)](#ff7-remake-the-ultimate-performance--stuttering-fix-windows--linux)
   - [⚙️ Engine.ini Configuration Files](#️-engineini-configuration-files)
   - [🪟 Windows Installation](#-windows-installation)
-    - [Automated Installation (Recommended)](#automated-installation-recommended)
-    - [Manual Installation (Alternative)](#manual-installation-alternative)
-      - [1. Install the Mods](#1-install-the-mods)
-      - [2. (Optional) Apply the Engine Config](#2-optional-apply-the-engine-config)
-      - [3. Manual Steam Launch Options](#3-manual-steam-launch-options)
+    - [Installation](#installation)
+    - [1. The Windows Mod Stack](#1-the-windows-mod-stack)
+    - [2. Force DirectX 11](#2-force-directx-11)
+    - [3. The Windows-Optimized Engine.ini](#3-the-windows-optimized-engineini)
+    - [4. Frame Pacing via NVIDIA Control Panel](#4-frame-pacing-via-nvidia-control-panel)
   - [🐧 Linux (Ubuntu / Pop!\_OS / Steam Deck) Configuration](#-linux-ubuntu--pop_os--steam-deck-configuration)
-    - [Automated Install Examples](#automated-install-examples)
-    - [1. Install the Essential Mods](#1-install-the-essential-mods)
-    - [2. Install Luma's Proton Dependencies](#2-install-lumas-proton-dependencies)
-    - [3. (Optional) Apply Performance Configuration](#3-optional-apply-performance-configuration)
-    - [4. Proper NVIDIA Driver Installation (Modern RTX Series)](#4-proper-nvidia-driver-installation-modern-rtx-series)
-    - [5. Steam Launch Options (The Crucial Step)](#5-steam-launch-options-the-crucial-step)
-  - [📊 Linux: Monitoring Performance with MangoHud](#-linux-monitoring-performance-with-mangohud)
     - [1. Installation](#1-installation)
+    - [2. Install Luma's Proton Dependencies](#2-install-lumas-proton-dependencies)
+    - [2.1 Shader Compilation Stutter Fix - Setup Shader Cache For NVIDIA](#21-shader-compilation-stutter-fix---setup-shader-cache-for-nvidia)
+    - [2.2 Configuring Vulkan Rendeting Queue](#22-configuring-vulkan-rendeting-queue)
+    - [3. Apply Performance Configuration](#3-apply-performance-configuration)
+    - [4. Proper NVIDIA Driver Installation (Modern RTX Series)](#4-proper-nvidia-driver-installation-modern-rtx-series)
+    - [5. Steam Launch Options](#5-steam-launch-options)
+  - [📊 Linux: Monitoring Performance with MangoHud](#-linux-monitoring-performance-with-mangohud)
+    - [1. Installation](#1-installation-1)
     - [2. In-Game Usage](#2-in-game-usage)
   - [🎮 Native DualSense (PS5) Support](#-native-dualsense-ps5-support)
     - [🖥️ Tested Environment](#️-tested-environment)
@@ -36,9 +37,6 @@ This repository includes three pre-optimized `Engine.ini` configurations:
 
 - **[Engine.ini](Engine.ini)** — Standard balanced configuration with multithreading optimization, forced native resolution, and motion blur/DOF disabled. Combines SPF tweaks with Unreal Engine 4 performance optimizations.
 
-- **[Engine-full-res.ini](Engine-full-res.ini)** — Ultra-graphics variant for high-end GPUs (8GB+ VRAM). Includes 4K shadow resolution, maximum draw distance to eliminate pop-in, and cinematic anti-aliasing.
-
-- **[Engine-full-res-dlss.ini](Engine-full-res-dlss.ini)** — Ultra-graphics + DLSS/FSR optimized variant. Tunes dynamic resolution scaling (50-80%), temporal AA samples (16), and DLAA forcing for maximum Luma upscaler quality.
 
 **Where Engine.ini Goes:**
 
@@ -57,79 +55,76 @@ Use the appropriate file when running the installation scripts, or copy its cont
 
 ## 🪟 Windows Installation
 
-### Automated Installation (Recommended)
+### Installation
 
-If you have this repository cloned, use the provided PowerShell script to automate mods, config deployment, and setup:
+Here is the definitive, clean setup to get the absolute best performance out of *Final Fantasy VII Remake* on Windows.
 
-```powershell
-.\setup-windows.ps1 --GamePath "C:\Program Files (x86)\Steam\steamapps\common\FINAL FANTASY VII REMAKE" --EngineLni .\Engine.ini
-```
+### 1. The Windows Mod Stack
+Drop these into your `End\Binaries\Win64` folder. 
 
-**Key Parameters:**
+* **FFVIIHook:** Absolutely mandatory. It unlocks the developer console and forces the game to read your custom `Engine.ini`.
+* **Luma (DLSS/FSR):** Keep this. Since you are using an NVIDIA GPU, replacing the game's terrible default TAA with DLSS is essential for visual clarity.
+* **SPF (Stuttering Prevention Fix):** **Keep this on Windows.** Unlike in Ubuntu where it conflicted with the Linux kernel scheduler, this mod was specifically reverse-engineered for the Windows CPU scheduler. It does a decent job of reallocating thread priority to prevent the game from choking its own main thread.
 
-- `--GamePath` — Path to FF7 Remake installation (auto-detects if omitted)
-- `--EngineLni` — Path to Engine.ini file (default: `.\Engine.ini`)
-- `--LumaOnly` — Install only Luma, skip FFVIIHook and config
-- `--SkipHook` — Skip FFVIIHook (xinput1_3.dll) installation
-- `--SkipLuma` — Skip Luma mod installation
-- `--SkipConfig` — Skip Engine.ini deployment
-- `--DryRun` — Preview all planned installations without making changes
-- `--Help` — Display full help documentation
-
-**Common Examples:**
-
-```powershell
-# Auto-detect game path, use standard Engine.ini
-.\setup-windows.ps1
-
-# Ultra-graphics config (8GB+ VRAM)
-.\setup-windows.ps1 --EngineLni .\Engine-full-res.ini
-
-# Ultra-graphics + DLSS/FSR optimization
-.\setup-windows.ps1 --EngineLni .\Engine-full-res-dlss.ini
-
-# Custom game installation path
-.\setup-windows.ps1 --GamePath "D:\Games\FINAL FANTASY VII REMAKE"
-
-# Preview changes without installation
-.\setup-windows.ps1 --DryRun
-
-# Install only Luma mod
-.\setup-windows.ps1 --LumaOnly
-```
-
-> [!IMPORTANT]
-> The script must run with **user privileges** (not as Administrator). If you installed Steam in a restricted location that requires admin access, you will need to run the installation steps manually or provide appropriate permissions.
+### 2. Force DirectX 11
+By default, the Windows port tries to run on DirectX 12, which is the primary cause of the severe shader compilation stutter in this specific game. 
+* Open Steam -> Right-click *Final Fantasy VII Remake* -> Properties.
+* In the **Launch Options**, simply type: `-d3d11`
 
 > [!NOTE]
-> After the script completes, you **must manually set the Steam launch option** (see "Manual Steam Launch Options" below). The script will display instructions on how to do this.
+> Because we are forcing DX11, we don't need to use DXVK on Windows. Native DX11 combined with NVIDIA's driver handles the shaders well enough.
 
----
+### 3. The Windows-Optimized Engine.ini
+Since we are forcing DX11, we need to strip out all the DX12 garbage from your previous file. Go to `Documents\My Games\FINAL FANTASY VII REMAKE\Saved\Config\WindowsNoEditor\` and replace the contents of `Engine.ini` with this exact block:
 
-### Manual Installation (Alternative)
+```ini
+[SystemSettings]
+; --- LUMA - DLSS ---
+r.DynamicRes.OperationMode=0
+r.DynamicRes.MinScreenPercentage=100
+r.TemporalAASamples=8
 
-If you prefer to install manually or the script doesn't work for your setup:
+[/Script/Engine.RendererSettings]
+; --- VRAM & Streaming Optimization ---
+r.Streaming.PoolSize=0
+r.Streaming.LimitPoolSizeToVRAM=1
+r.UseShaderCaching=1
+r.CreateShadersOnLoad=1
+r.ShaderComplexity.CacheShaders=1
 
-#### 1. Install the Mods
-1. Navigate to your game installation folder: `[Steam Library]\steamapps\common\FINAL FANTASY VII REMAKE\End\Binaries\Win64`
-2. Extract the `xinput1_3.dll` from the **FFVIIHook** folder into this folder.
-3. Extract the contents of the **Luma** mod (from the `.zip` file) into the same `Win64` folder. The important files are `dxgi.dll` and the accompanying Luma configuration files.
+[Core.System]
++Suppress=ScriptWarning
++Suppress=Error
++Suppress=ScriptLog
++Suppress=Warning
 
-#### 2. (Optional) Apply the Engine Config
-1. Go to your Documents folder:
-   `%USERPROFILE%\Documents\My Games\FINAL FANTASY VII REMAKE\Saved\Config\WindowsNoEditor\`
-2. Open `Engine.ini` (create it if it doesn't exist) and copy the contents from one of the config files in this repo ([Engine.ini](Engine.ini), [Engine-full-res.ini](Engine-full-res.ini), or [Engine-full-res-dlss.ini](Engine-full-res-dlss.ini)). Save and close.
-   *(This is optional; Luma works without it, but Engine.ini significantly improves stuttering and frame consistency.)*
+[ConsoleVariables]
+; --- Disable Dynamic Resolution ---
+r.DynamicRes.OperationMode=0
 
-#### 3. Manual Steam Launch Options
-1. Right-click the game in your Steam Library > **Properties** > **General**.
-2. Under **Launch Options**, type:
-   ```
-   -dx11
-   ```
-   *(Luma for FF7 Remake is currently a DX11-only mod. Do not use `-dx12` for this mod.)*
+; --- Shadow Quality (Balanced for CPU) ---
+r.Shadow.MaxResolution=2048
+r.Shadow.MaxCSMResolution=2048
+r.Shadow.DistanceScale=1.0
 
-Once you launch the game, wait for the main menu to load. Press the **`Home`** or **`Insert`** key to open the Luma overlay, where you can select your preferred upscaler and image settings.
+; --- Clean Image (Disable Blur/Grain) ---
+r.MotionBlurQuality=0
+r.Tonemapper.GrainQuantization=0
+r.DepthOfFieldQuality=0
+r.DepthOfField.FarBlur=0
+```
+
+### 4. Frame Pacing via NVIDIA Control Panel
+On Linux, we used DXVK to force a perfectly rigid frametime. On Windows, the in-game framerate limiter is notoriously broken and introduces erratic frame pacing (which makes 60 FPS feel like 40 FPS). You must cap the framerate at the driver level.
+
+1.  Open the **NVIDIA Control Panel**.
+2.  Go to **Manage 3D Settings** -> **Program Settings** tab.
+3.  Select *FINAL FANTASY VII REMAKE* from the drop-down list (or add the `.exe` if it's not there).
+4.  Find **Max Frame Rate** and turn it **On**. Set it to exactly **60 FPS** (or your preferred target, like 45 or 120, depending on what your hardware can sustain during traversal).
+5.  Find **Power Management Mode** and set it to **Prefer maximum performance** (this stops the laptop's GPU from downclocking during those 1-second CPU bottlenecks).
+6.  Hit **Apply**.
+
+This setup is the absolute ceiling of what can be done on Windows. You will likely still notice a slight micro-stutter when transitioning between major zones, but the frametime graph should recover much faster than before.
 
 ---
 
@@ -155,69 +150,8 @@ Use `./setup-linux.sh --help` to see optional flags such as `--steam-install`, `
 > [!NOTE]
 > If `protontricks` is not already installed on Ubuntu, the script will try to install it automatically unless you pass `--skip-packages`. If you use `--skip-packages`, or you are on a distro without `apt`, then `protontricks` must already be installed before the script can run the prefix setup step.
 
-### Automated Install Examples
 
-Use the script below if you want it to install the repo's bundled FFVIIHook + Luma files, copy your chosen config as `Engine.ini`, install Proton dependencies, and print the final Steam launch options for you.
-
-**Default install using this repo's standard `Engine.ini`:**
-
-```bash
-chmod +x ./setup-linux.sh
-./setup-linux.sh --steam-install deb --engine-ini ./Engine.ini --gpu nvidia
-```
-
-**Full install using the higher-quality config file instead:**
-
-```bash
-chmod +x ./setup-linux.sh
-./setup-linux.sh --steam-install deb --engine-ini ./Engine-full-res.ini --gpu nvidia
-```
-
-**Full install with DLSS/FSR optimization (Luma-tuned settings):**
-
-```bash
-chmod +x ./setup-linux.sh
-./setup-linux.sh --steam-install deb --engine-ini ./Engine-full-res-dlss.ini --gpu nvidia
-```
-
-**Full install for Flatpak Steam:**
-
-```bash
-chmod +x ./setup-linux.sh
-./setup-linux.sh --steam-install flatpak --engine-ini ./Engine.ini --gpu nvidia
-```
-
-**Full install for a custom Steam directory:**
-
-```bash
-chmod +x ./setup-linux.sh
-./setup-linux.sh --steam-install custom --custom-steam-root "/path/to/Steam" --engine-ini ./Engine.ini --gpu nvidia
-```
-
-**Preview everything first without changing files:**
-
-```bash
-chmod +x ./setup-linux.sh
-./setup-linux.sh --steam-install deb --engine-ini ./Engine.ini --gpu nvidia --dry-run
-```
-
-Parameter summary:
-
-* `--engine-ini ./Engine.ini` or `--engine-ini ./Engine-full-res.ini` or `--engine-ini ./Engine-full-res-dlss.ini`: Selects the source config file. The destination is always written as `Engine.ini` inside the Proton prefix.
-* `--steam-install deb`: Use this when Steam was installed from the `.deb` package.
-* `--steam-install flatpak`: Use this when Steam was installed from the app center / Flatpak.
-* `--steam-install custom --custom-steam-root "/path/to/Steam"`: Use this when your Steam installation lives in a non-standard directory. The path must contain `steamapps`.
-* `--gpu nvidia`: Forces NVIDIA PRIME launch variables into the generated Steam launch options.
-* `--dry-run`: Shows exactly what the script would do without modifying anything.
-
-If you only want Luma without FFVIIHook/SPF, use:
-
-```bash
-chmod +x ./setup-linux.sh
-./setup-linux.sh --steam-install deb --engine-ini ./Engine.ini --luma-only --gpu nvidia
-```
-
-### 1. Install the Essential Mods
+### 1. Installation 
 1. Navigate to your game installation folder. Common Steam install roots on Linux are:
   - `~/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64` **(.deb package, downloaded from offical Steam site)**
   - `~/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64` **(Flatpak Steam)**
@@ -242,9 +176,79 @@ chmod +x ./setup-linux.sh
     protontricks 1462040 msvcrt40 vcrun2022
     ```
 
-### 3. (Optional) Apply Performance Configuration
+### 2.1 Shader Compilation Stutter Fix - Setup Shader Cache For NVIDIA
 
-The Engine.ini configurations included in this repo ([Engine.ini](Engine.ini), [Engine-full-res.ini](Engine-full-res.ini), and [Engine-full-res-dlss.ini](Engine-full-res-dlss.ini)) are **optional enhancements** for better CPU thread utilization and visual settings. Luma works without them, but they significantly improve stuttering and frame consistency.
+This configuration prevents ***Shader Compilation Stutter*** (that quick freeze that occurs the first time a new spell is cast or an explosion happens, because the video card needs to "learn" how to draw that effect). The RTX 5070 already compiles this very quickly, and with the DXVK_ASYNC=1 parameter that we set in the Steam options, this problem practically no longer exists in your setup.
+
+To set up NVIDIA shader cache on Ubuntu Linux by extending the cache size and preventing cleanup:
+
+1. Create a dedicated cache directory (optional but recommended):
+Open a terminal and run:
+
+   ```sh
+   mkdir -p ~/nvidia-shader-cache
+   ```
+
+2. Edit the environment file:
+Open /etc/environment with root privileges:
+
+   ```sh
+   sudo nano /etc/environment
+   ```
+
+3. Add the environment variables:
+Insert the following line to set the cache path and disable cleanup:
+
+   ```sh
+   # FIX: Shader Compilation Stutter
+   __GL_SHADER_DISK_CACHE_PATH=/home/YOUR_USERNAME_HERE/nvidia-shader-cache
+   __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
+   __GL_SHADER_DISK_CACHE_SIZE=107374182400 # 100 GB
+   ```
+
+> [!NOTE]
+> Replace `YOUR_USERNAME_HERE` with your actual username. 
+
+
+1. Save and reboot:
+
+   Save the file (Ctrl+O, then Enter in nano), exit (Ctrl+X), and reboot your system for changes to take effect. 
+
+***This configuration prevents the driver from clearing the shader cache when it exceeds 128 MB, allowing it to grow indefinitely and reducing stuttering caused by repeated shader compilation.***
+
+### 2.2 Configuring Vulkan Rendeting Queue
+
+Since I've lightened the Unreal Engine with `Engine.ini` and fixed the startup options, the last step to mitigate this problem on Linux is to configure the Vulkan rendering queue behavior so that the CPU doesn't "overwhelm" the GPU during the loading of new areas.
+
+1. Go to the game's root folder. The path is usually: `.../steamapps/common/FINAL FANTASY VII REMAKE/End/Binaries/Win64/` (this is the exact folder where the executable `ff7remake_.exe` is located).
+
+2. Create an empty text file called `dxvk.conf`.
+
+3. Paste the following lines inside it:
+
+   ```ini
+   # Forces asynchronous compilation (ensures that the Steam command is respected)
+   dxvk.enableAsync = true
+
+   # Reduces the queue of pre-rendered frames to 1.
+   # This decreases input latency and avoids absurd frametime spikes when the engine stutters on I/O.
+   dxgi.maxFrameLatency = 1
+
+   # Allows DXVK to relax certain D3D11 synchronization barriers,
+
+   # which improves fluidity in games with fast asset transitions.
+   d3d11.relaxedBarriers = true
+
+   ```
+
+Save the file. When you open the game through Steam, DXVK will silently read this file and apply the rules on top of the translation layer.
+
+With `Engine.ini` file, the framerate locked by the DXVK we did earlier, and the render queue reduced to `1`, the game should achieve the maximum possible fluidity.
+
+
+### 3. Apply Performance Configuration
+
+For better CPU thread utilization and visual settings apply Engine.ini configuration. Luma works without them, but they significantly improve stuttering and frame consistency.
 
 **Important:** Engine.ini goes in a **different location** than the DLL mods. While the DLLs go in `/End/Binaries/Win64/`, the Engine.ini config goes in the Proton prefix directory.
 
@@ -266,11 +270,9 @@ To apply a config file:
    mkdir -p "$CONFIG_DIR"
    ```
 
-3. Copy your chosen Engine.ini file from this repo to that folder:
+3. Copy Engine.ini file from this repo to that folder:
    ```bash
    cp ./Engine.ini "$CONFIG_DIR/Engine.ini"
-   # or for DLSS-optimized:
-   cp ./Engine-full-res-dlss.ini "$CONFIG_DIR/Engine.ini"
    ```
 
 > [!NOTE]
@@ -292,38 +294,29 @@ Newer graphics cards (like the RTX 50-series) require the new Open GPU Kernel Mo
 3. **Reboot your computer.** (Mandatory for the Kernel to load the new module into memory).
 4. After rebooting, verify the installation by running `nvidia-smi` in the terminal. If it returns `No devices were found`, ensure that **Secure Boot** is disabled in your motherboard's BIOS, as it blocks third-party modules from loading.
 
-### 5. Steam Launch Options (The Crucial Step)
+### 5. Steam Launch Options
 
-The minimum required launch option for **Luma alone** is:
-
-```bash
-WINEDLLOVERRIDES="dxgi=n,b" %command% -dx11
-```
-
-If you also installed **FFVIIHook**, add its DLL override:
+Navigate to games's properties and set this command line in `General --> Launch Options`
 
 ```bash
-WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" %command% -dx11
+DXVK_ASYNC=1 __GL_SYNC_TO_VBLANK=0 __GL_SYNC_DISPLAY_DEVICE=auto MANGOHUD_CONFIG=fps_limit=60,full,cpu_stats,gpu_stats,ram,vram mangohud %command% -d3d11
 ```
 
-**Optional enhancements** (NVIDIA GPU + performance utilities):
+**Forcing Performance Profile (Feral GameMode)**
+
+Ubuntu has a native tool from Feral Interactive that changes the CPU governor to maximum performance and temporarily prioritizes I/O for the game.
+
+Change your Steam launcher line to include **gamemoderun** right before %command%:
 
 ```bash
-__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" gamemoderun mangohud %command% -dx11
+# If GameMode is not installed, you can quickly install it in the terminal with sudo apt install gamemode
+
+DXVK_ASYNC=1 DXVK_FRAME_RATE=60 __GL_SYNC_TO_VBLANK=0 __GL_SYNC_DISPLAY_DEVICE=auto MANGOHUD_CONFIG=full,cpu_stats,gpu_stats,ram,vram,frametime gamemoderun mangohud %command% -d3d11
 ```
 
-**Stable 60fps for my current laptop with GTX 5070**
-```bash
-MANGOHUD_CONFIG=fps_limit=0 vblank_mode=0 __GL_SYNC_TO_VBLANK=0 DXVK_FRAME_RATE=0 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b" mangohud %command% -dx11
-```
+> [!NOTE]
+> It was noted that this command reduced stuttering issue, but issue still persist but with less and less agressive frame drops. To be very frank, I've already optimized the engine (internal I/O) and the graphics API (DXVK/Vulkan) to the limit and the frame drop persists, I've hit the ceiling of what the Square Enix port allows in terms of software. 
 
-**What each part does:**
-* `WINEDLLOVERRIDES="dxgi=n,b"` — Loads Luma's dxgi.dll
-* `WINEDLLOVERRIDES="xinput1_3=n,b;dxgi=n,b"` — Loads both FFVIIHook and Luma
-* `__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia` — Forces dedicated NVIDIA GPU (remove if using AMD/Intel)
-* `gamemoderun` — Enables Feral GameMode for performance priority
-* `mangohud` — Displays performance overlay (remove if you don't want it)
-* `-dx11` — Forces DirectX 11 (required for Luma)
 
 ---
 
