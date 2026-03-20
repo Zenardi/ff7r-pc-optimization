@@ -1,4 +1,6 @@
-# FF7 Remake: Ultimate Performance and Stutter Reduction Guide (Windows and Linux)
+# Final Fantasy 7 Remake: Ultimate Performance and Stutter Reduction Guide (Windows and Linux)
+
+![image](./image.png)
 
 This repository provides a practical setup guide for reducing traversal and shader-compilation stutter in *Final Fantasy VII Remake Intergrade* on PC.
 
@@ -19,7 +21,7 @@ It combines three key mods with OS-level and driver-level tuning:
 
 ## Contents
 
-- [FF7 Remake: Ultimate Performance and Stutter Reduction Guide (Windows and Linux)](#ff7-remake-ultimate-performance-and-stutter-reduction-guide-windows-and-linux)
+- [Final Fantasy 7 Remake: Ultimate Performance and Stutter Reduction Guide (Windows and Linux)](#final-fantasy-7-remake-ultimate-performance-and-stutter-reduction-guide-windows-and-linux)
     - [Why this stack works](#why-this-stack-works)
   - [Contents](#contents)
   - [Engine.ini Config Files in This Repo](#engineini-config-files-in-this-repo)
