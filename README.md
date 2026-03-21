@@ -380,7 +380,7 @@ DXVK_ASYNC=1 DXVK_FRAME_RATE=60 __GL_SYNC_TO_VBLANK=0 __GL_SYNC_DISPLAY_DEVICE=a
 
 If you choose you can disable MangoHUD by simply removing it from the command:
 ```bash
-DXVK_ASYNC=1 DXVK_FRAME_RATE=60 __GL_SYNC_TO_VBLANK=0 __GL_SYNC_DISPLAY_DEVICE=auto gamemoderun mangohud %command% -d3d11
+DXVK_ASYNC=1 DXVK_FRAME_RATE=60 __GL_SYNC_TO_VBLANK=0 __GL_SYNC_DISPLAY_DEVICE=auto gamemoderun %command% -d3d11
 ```
 
 > [!NOTE]
